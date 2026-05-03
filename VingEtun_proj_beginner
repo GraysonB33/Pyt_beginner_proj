@@ -1,0 +1,154 @@
+#Author: Grace Barahona
+#Program: Vingt-et-un. Dice game
+#Date: April 7, 2026
+#file: VingtEtUn.py
+#Description: Vingt-et-un is a dice game (known as Blackjack in the USA), where a player competes against the computer (house).
+#The goal of the game is to score 21 points, or as near as possible without going over.
+#The two players take turns throwing two dice as many times as desired and adding up the numbers thrown on each round.
+#
+#IPO-
+#input: player name, menu option, player choice to keep playing or stop
+#processing: get player name, display menu and validate input, show rules-
+#start game, generate random dice rolls, get player and house totals-
+#apply game rules, check for bust, compare score, process errors
+#
+#output: game rules, dice rolls, scores (updated), final results and messages, error message
+import random
+
+
+def main():
+    #Getting name
+    print("Let's play Vingt-et-un.")
+    playerName = input("What is the player's name? ")
+
+    option = 0
+    #menu options. loop until player quits
+    while option != 3:
+        print("\nChoose one of the following options:")
+        print("1. See the Rules")
+        print("2. Play Vingt-et-un")
+        print("3. Quit")
+        #checking for error and choice
+        while True:
+            try:
+                option = int(input("Select option (1-3): "))
+                if option in [1, 2, 3]:
+                    break
+                else:
+                    print("Invalid choice, please put 1, 2, or 3")
+            except ValueError:
+                print("Please enter a number!")
+        #calling the rules
+        if option == 1:
+            show_rules()
+        #Start the game, the win/lose response and total calls
+        elif option == 2:
+            print("\nGame starting...\n")
+
+            player_total, house_total = play_roll(playerName)
+
+            print("\nFINAL SCORES")
+            print(playerName, ":", player_total)
+            print("House:", house_total)
+
+            if player_total > 21:
+                print("You busted! House wins. Better luck next time")
+            elif house_total > 21:
+                print(f"House busted! You win! Way to go {playerName}")
+            elif player_total > house_total:
+                print(f"\n{playerName}, you got {player_total} points! \nWinner winner chicken dinner! You won! Let's have a fiesta!")
+            elif player_total < house_total:
+                print(f"House won with {house_total} points. Oh no {playerName}, I think its time to go back to Doom (the game)")
+            else:
+                print("It's a tie! What an ending!")
+
+        elif option == 3:
+            print("Its sad to part ways with such a skilled player. Ciao!")
+
+
+# rules of the game. Wall of text
+def show_rules():
+    print("Vingt-et-un is a dice game, where a player competes against the computer (house).") 
+    print("The goal of the game is to score 21 points, or as near as possible without going over.\n") 
+    print("The two players take turns throwing two dies as many times as desired.") 
+    print("Adding up the numbers thrown on each round.") 
+    print("When the player totals 14 or more then one of the dies are discarded for the consecutive") 
+    print("turns. The house will always throw the dice until it totals 17 or higher.") 
+    print("At 17 or higher, the house must stay.") 
+    print("A player who totals over 21 is a bust and loses.")
+    print("The player nearest 21 after they had a turn, wins the game.") 
+    print("Wins the game. In case of a equal total, the game ties.") 
+    print("\nThe game is over at the end of a round when: \nOne or both players are bust.\nBoth players choose to stay.")
+
+#the players rolling function
+def play_roll(playerName):
+    
+#initialize totals
+    player_total = 0
+    house_total = 0
+    round_num = 1
+
+    player_stay = False
+    house_stay = False
+
+    #the first round. continue rounds until they both stay or one loses
+    while not player_stay or not house_stay:
+
+        print("ROUND", round_num)
+        
+
+        
+        if not player_stay:
+            if player_total >= 14:
+                roll = random.randint(1, 6)
+                player_total += roll
+                print(f"{playerName} rolled:", roll)
+            else:
+                roll_1 = random.randint(1, 6)
+                roll_2 = random.randint(1, 6)
+                player_total += roll_1 + roll_2
+                print(f"{playerName} rolled:", roll_1, roll_2)
+
+        # House rolling
+        if not house_stay:
+            if house_total >= 17:
+                house_stay = True
+            elif house_total >= 14:
+                roll = random.randint(1, 6)
+                house_total += roll
+                print("House rolled:", roll)
+            else:
+                roll_1 = random.randint(1, 6)
+                roll_2 = random.randint(1, 6)
+                house_total += roll_1 + roll_2
+                print("House rolled:", roll_1, roll_2)
+
+        #showcase score
+        print("\nScores after round:")
+        print(f"{playerName}:", player_total)
+        print("House:", house_total)
+
+        # bust check
+        if player_total > 21 or house_total > 21:
+            break
+
+        # continuing the game option
+        if not player_stay:
+            answer = input("\nRoll or stay? (r/s): ").lower()
+
+            while answer not in ["r", "s"]:
+                answer = input("Invalid. Enter r or s: ").lower()
+
+            if answer == "s":
+                player_stay = True
+
+        # houses rule of 17
+        if house_total >= 17:
+            house_stay = True
+
+        round_num += 1
+
+    return player_total, house_total
+
+main()
+
